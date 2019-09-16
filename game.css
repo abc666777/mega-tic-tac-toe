@@ -1,40 +1,132 @@
-body{
-    margin: 0;
+@font-face {
+    font-family: scribble;
+    src: url(font.ttf);
 }
 
-@font-face {
-  font-family: scribble;
-  src: url(font.ttf);
+body{
+    margin: 0;
+    font-family: scribble;
+    background-color: #FEF8BA;
 }
 
 #container{
-    margin: auto;
-    margin-top: 2.65%;
-    width: 90%;
-    height: 90vh;
+}
+
+#canvas{
+    width: 100%;
+    height: 100vh;
+    background-color: #FEF8BA;
     display: flex;
     justify-content: center;
     align-items: center;
+    /* position: fixed; */
 }
-#scene{
+#start-page{
+    text-align: center;
 }
-table{
+.game-title{
+    text-align: center;
+    font-size: 5em;
+}
+.sub-menu{
+    text-align: center;
+    font-size: 3em;
+    margin: 50px;
+    transition: 0.3s;
+    cursor: pointer;
+    user-select: none;
+}
+.sub-menu:hover{
+    transform: scale(1.2);
+    text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5)
+}
+#play-page{
+    width: 100%;
+    height: 100%;
+}
+#status-bar{
+    width: 100%;
+}
+.sub-status{
+    width: 100%;
+    display: inline-block;
+    display: flex;
+    justify-content: center;
+    font-size: 3em;
+    padding: 50px 0px;
+    text-align: center;
+}
+#button-pause{
+    position: absolute;
+    float: right;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+#playTable{
+    display: flex;
+    justify-content: center;
+}
+#menuPause{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.486);
     color: white;
+    z-index: 10001;
+}
+#winner{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.486);
+    color: white;
+    z-index: 10001;
+}
+#winname{
+    font-size: 7em;
+}
+#timeCounter{
+    transition: 0.3s;
+}
+/*  */
+table{
+    color: black;
+    z-index: 1000;
+    border: 10px solid black;
+    border-radius: 5px;
 }
 
 .table-col{
-    width: 3vw;
-    height: 3vw;
+    width: 2vw;
+    height: 2vw;
     cursor: pointer;
-    background-color: black;
+    background-color: #FEF8BA;
     user-select: none;
     justify-content: center;
     text-align: center;
     align-items: center;
-    font-size: 2.3vw;
     font-family: scribble;
+    border: 1px solid black;
+    font-weight: 900;
 }
 
 .table-col:hover{
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.addTotable{
+    animation: bigToSmall 0.3s;
+    transition: 0.3s;
+}
+
+@keyframes bigToSmall{
+    from{ transform: scale(5) }
+    to{transform: scale(1)}
 }

@@ -11,7 +11,49 @@
 
 <body>
     <div id="container">
-        <div id="scene">
+        <div id="canvas">
+            <div id="winner">
+                <div>
+                    <div class="game-title" id="winname">Win!</div>
+                    <div class="sub-menu" onclick="gameStop(MENU)">X <b>MODE</b> O</div>
+                    <div class=" sub-menu" onclick="gameStop(NONE)">X <b>EXIT</b> O</div>
+                </div>
+            </div>
+            <div id="menuPause">
+                <div>
+                    <div class="game-title">Menu</div>
+                    <div class="sub-menu" onclick="callPauseMenu(false)">X <b>CONTINUE</b> O</div>
+                    <div class="sub-menu" onclick="gameStop(MENU)">X <b>MODE</b> O</div>
+                    <div class=" sub-menu" onclick="gameStop(NONE)">X <b>EXIT</b> O</div>
+                </div>
+            </div>
+            <div id="start-page">
+                <div>
+                    <div class="game-title"><b>MEGA-TIC-TAC-TOE</b></div>
+                    <div class="sub-menu" onclick="init(MENU, 0)">X <b>START</b> O</div>
+                </div>
+            </div>
+            <div id="menu">
+                <div>
+                    <div class="game-title"><b>MODE</b></div>
+                    <div class="sub-menu" onclick="init(START, 30)">X <b>NOVICE</b> O</div>
+                    <div class="sub-menu" onclick="init(START, 15)">X <b>INTERMEDIATE</b> O</div>
+                    <div class="sub-menu" onclick="init(START, 5)">X <b>PRO</b> O</div>
+                    <br>
+                </div>
+            </div>
+            <div id="play-page">
+                <div id="status-bar">
+                    <div class="sub-status">
+                        <div>
+                            <div id="turn">TURN OF <b>X</b></div>
+                            <div id="timeCounter">TIME: <b>30</b></div>
+                        </div>
+                    </div>
+                    <img onclick="callPauseMenu(true)" id="button-pause" src="pause-symbol.svg" width="30px" alt="">
+                </div>
+                <div id="playTable"></div>
+            </div>
         </div>
     </div>
 </body>
