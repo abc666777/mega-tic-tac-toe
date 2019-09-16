@@ -1,4 +1,5 @@
 NONE = 0;
+MENU = 5
 START = 1;
 PLAY = 2;
 STOP = 3;
@@ -12,20 +13,24 @@ initValue = 0;
 boxCount = 225;
 BGM = new sound('bgm.mp3');
 
+SPACEBAR = 32 //KEYCODE
+P = 80 //KEYCODE
+
 document.body.onkeyup = function(e){
-    if(e.keyCode == 32){
+    if(e.keyCode == SPACEBAR && STATE == NONE){
         BGM.play();
+        setState(MENU);
     }
-    if(e.keyCode == 80){
+    if(e.keyCode == P){
         BGM.stop();
     }
 }
-
 
 function init(state) {
     if (state == START) {
         //scene Make table
         setState(PLAY);
+        document.getElementById('scene').innerHTML = "";
         let table = document.createElement('table');
         for (let i = 0; i < 15; i++) {
             let row = table.insertRow(-1);
