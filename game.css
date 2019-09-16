@@ -1,6 +1,12 @@
 body{
     margin: 0;
 }
+
+@font-face {
+  font-family: scribble;
+  src: url(font.ttf);
+}
+
 #container{
     margin: auto;
     margin-top: 2.65%;
@@ -25,7 +31,8 @@ table{
     justify-content: center;
     text-align: center;
     align-items: center;
-    font-size: 2.5vw;
+    font-size: 2.3vw;
+    font-family: scribble;
 }
 
 .table-col:hover{
