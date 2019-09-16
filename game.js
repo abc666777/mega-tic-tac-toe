@@ -10,6 +10,17 @@ PLAYER = 'X';
 arrayValue = [];
 initValue = 0;
 boxCount = 225;
+BGM = new sound('bgm.mp3');
+
+document.body.onkeyup = function(e){
+    if(e.keyCode == 32){
+        BGM.play();
+    }
+    if(e.keyCode == 80){
+        BGM.stop();
+    }
+}
+
 
 function init(state) {
     if (state == START) {
@@ -110,5 +121,23 @@ function checkRightArc(){ //CHECK CHIANG SAI
                         {alert(PLAYER + ' WINS!');setState(STOP);}
             }
         }
+    }
+}
+
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        playSound = this.sound.play();
+        if (playSound !== undefined) {
+            playSound.then(_ => {}).catch(error => {});
+        }
+    }
+    this.stop = function(){
+        this.sound.pause();
     }
 }
