@@ -129,20 +129,20 @@ function checkRightArc(){ //CHECK CHIANG SAI
     }
 }
 
-function sound(src) {
+function sound(src) { //ADD AUDIO TAG
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
     this.sound.style.display = "none";
     document.body.appendChild(this.sound);
-    this.play = function(){
-        playSound = this.sound.play();
+    this.play = function(){ //BGM.play(); START BGM MUSIC
+        playSound = this.sound.play(); //ERROR HANDLER (For Chrome Policy)
         if (playSound !== undefined) {
             playSound.then(_ => {}).catch(error => {});
         }
     }
-    this.stop = function(){
+    this.stop = function(){ //BGM.stop();
         this.sound.pause();
     }
 }
