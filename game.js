@@ -103,8 +103,8 @@ function checkLeftArc(){ //CHECK CHIANG SAI
 
 function checkRightArc(){ //CHECK CHIANG SAI
     if(STATE == PLAY){
-        for(i = 4; i < 14; i++){
-            for(j = 4; j < 14; j++){
+        for(let i = 0; i < 11; i++){
+            for(let j = 4; j < 15; j++){
                 if(arrayValue[i][j] == arrayValue[i+1][j-1] && arrayValue[i+1][j-1] == arrayValue[i+2][j-2] 
                     && arrayValue[i+2][j-2] == arrayValue[i+3][j-3] && arrayValue[i+3][j-3] == arrayValue[i+4][j-4])
                         {alert(PLAYER + ' WINS!');setState(STOP);}
