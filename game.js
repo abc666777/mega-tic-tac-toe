@@ -1,3 +1,4 @@
+//YEET
 NONE = 0;
 START = 1;
 PLAY = 2;
@@ -133,7 +134,7 @@ function setCounter() {
     }
 }
 
-//Gameplay
+//Gameplay 
 function clicked(player, x, y) { //CLICKED FUNCTION
         SFX.play();
     if (document.getElementById(`x${x}y${y}`).innerText == '' && STATE == PLAY) {
