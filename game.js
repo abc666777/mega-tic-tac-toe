@@ -22,16 +22,16 @@ playPage = document.getElementById('play-page');
 winner = document.getElementById('winner');
 
 BGM = new sound('bgm.mp3');
+BGM.sound.setAttribute('loop', 'loop');
 SFX = new sound('sfx.wav');
 
-
-if (BGM.duration > 0 && !BGM.paused) {
-
-} else {
-    BGM.play();
-}
-
 window.onload = init(NONE, 0)
+
+
+function playSFX(){
+    SFX.sound.currentTime = 0;
+    SFX.play();
+}
 
 function init(state, time) {
     TIME = time;
@@ -46,6 +46,7 @@ function init(state, time) {
     }
     if (state == START) {
         //scene Make Table
+        playSFX();
         menuPage.style.display = 'none';
         startPage.style.display = 'none';
         menuMode.style.display = 'none';
@@ -76,6 +77,7 @@ function init(state, time) {
         playTable.appendChild(table);
     }
     if (state == MENU) {
+        playSFX();
         BGM.play();
         menuPage.style.display = 'none';
         startPage.style.display = 'none';
@@ -87,9 +89,11 @@ function init(state, time) {
 
 function callPauseMenu(x) {
     if (x) {
+        playSFX();
         menuPage.style.display = 'flex';
         setState(PAUSE);
     } else {
+        playSFX();
         menuPage.style.display = 'none';
         setState(PLAY);
     }
@@ -98,9 +102,11 @@ function callPauseMenu(x) {
 function callWinner(x, player) {
     if (x) {
         winner.style.display = 'flex';
+        playSFX();
         setState(PAUSE);
     } else {
         winner.style.display = 'none';
+        playSFX();
         setState(PLAY);
     }
     winname.innerHTML = PLAYER + ' WIN!!';
@@ -116,18 +122,20 @@ function turnManage(time) {
 }
 
 function gameStop(state) {
+    playSFX();
     clearInterval(gameTime);
     playTable.innerHTML = '';
     setTimeout(() => {
         init(state, 0);
     }, 100);
+
 }
 
 function setCounter() {
     if (STATE == PLAY) {
         COUTER--;
         if (COUTER <= 0) {
-            COUTER = TIME
+            COUTER = TIME;
             toggleTurn();
         };
         timeCounter.innerHTML = `TIME: <b>${COUTER}</b>`
@@ -136,8 +144,8 @@ function setCounter() {
 
 //Gameplay 
 function clicked(player, x, y) { //CLICKED FUNCTION
-        SFX.play();
     if (document.getElementById(`x${x}y${y}`).innerText == '' && STATE == PLAY) {
+        playSFX();
         document.getElementById(`x${x}y${y}`).innerText = PLAYER;
         document.getElementById(`x${x}y${y}`).classList.add('addTotable');
         arrayValue[x][y] = PLAYER;
