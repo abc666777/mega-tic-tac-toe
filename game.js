@@ -20,20 +20,15 @@ menuMode = document.getElementById('menu');
 playPage = document.getElementById('play-page');
 winner = document.getElementById('winner');
 
-//BGM = new sound('bgm.mp3');
+BGM = new sound('bgm.mp3');
+SFX = new sound('sfx.wav');
 
-//SPACEBAR = 32 //KEYCODE
-//P = 80 //KEYCODE
 
-// document.body.onkeyup = function (e) {
-//     if (e.keyCode == SPACEBAR && STATE == NONE) {
-//         BGM.play();
-//         setState(MENU);
-//     }
-//     if (e.keyCode == P) {
-//         BGM.stop();
-//     }
-// }
+if (BGM.duration > 0 && !BGM.paused) {
+
+} else {
+    BGM.play();
+}
 
 window.onload = init(NONE, 0)
 
@@ -80,6 +75,7 @@ function init(state, time) {
         playTable.appendChild(table);
     }
     if (state == MENU) {
+        BGM.play();
         menuPage.style.display = 'none';
         startPage.style.display = 'none';
         menuMode.style.display = 'flex';
@@ -100,13 +96,13 @@ function callPauseMenu(x) {
 
 function callWinner(x, player) {
     if (x) {
-        winner.style.display = 'flex'
+        winner.style.display = 'flex';
         setState(PAUSE);
     } else {
         winner.style.display = 'none';
         setState(PLAY);
     }
-    winname.innerHTML = PLAYER + ' Win!!'
+    winname.innerHTML = PLAYER + ' WIN!!';
 
 }
 
@@ -139,6 +135,7 @@ function setCounter() {
 
 //Gameplay
 function clicked(player, x, y) { //CLICKED FUNCTION
+        SFX.play();
     if (document.getElementById(`x${x}y${y}`).innerText == '' && STATE == PLAY) {
         document.getElementById(`x${x}y${y}`).innerText = PLAYER;
         document.getElementById(`x${x}y${y}`).classList.add('addTotable');
