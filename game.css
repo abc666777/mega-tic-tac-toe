@@ -7,6 +7,7 @@ body{
     margin: 0;
     font-family: scribble;
     background-color: #FEF8BA;
+    user-select: none;
 }
 
 #container{
@@ -124,6 +125,14 @@ table{
 .addTotable{
     animation: bigToSmall 0.3s;
     transition: 0.3s;
+}
+
+.addTotable > div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 3px;
+    margin-top: 4px;
 }
 
 @keyframes bigToSmall{
