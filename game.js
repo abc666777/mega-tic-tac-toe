@@ -146,7 +146,7 @@ function setCounter() {
 function clicked(player, x, y) { //CLICKED FUNCTION
     if (document.getElementById(`x${x}y${y}`).innerText == '' && STATE == PLAY) {
         playSFX();
-        document.getElementById(`x${x}y${y}`).innerText = PLAYER;
+        document.getElementById(`x${x}y${y}`).innerHTML = `<div>${PLAYER}</div>`;
         document.getElementById(`x${x}y${y}`).classList.add('addTotable');
         arrayValue[x][y] = PLAYER;
         COUTER = TIME;
