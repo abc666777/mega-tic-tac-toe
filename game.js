@@ -5,6 +5,12 @@ const sfx = new Audio('sfx.wav'), bgm = new Audio('bgm.mp3');
 bgm.loop = true;
 const play = a => { a.currentTime = 0; a.play().catch(() => {}); }; // ignore autoplay-policy errors
 
+// When the page is on GitHub Pages, set this to your deployed Node server (wss://...).
+const REMOTE_SERVER = 'wss://mega-tic-tac-toe.onrender.com';
+const SERVER_URL = location.hostname.endsWith('github.io')
+  ? REMOTE_SERVER
+  : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+
 let ws, me, turn, over = true, time = 30;
 
 const show = name => SCREENS.forEach(s => { $(s).hidden = s !== name; });
@@ -13,14 +19,18 @@ function send(m) {
   const go = () => ws.send(JSON.stringify(m));
   if (ws && ws.readyState === 1) return go();
   if (ws && ws.readyState === 0) return ws.addEventListener('open', go, { once: true });
-  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
-  ws.onopen = go;
+  let opened = false;
+  try { ws = new WebSocket(SERVER_URL); }
+  catch { return fail('Invalid server address in game.js'); }
+  ws.onopen = () => { opened = true; go(); };
   ws.onmessage = e => handle(JSON.parse(e.data));
   ws.onclose = () => {
-    if (!$('waiting').hidden) { show('lobby'); $('msg').textContent = 'Disconnected from server'; }
+    if (!opened) fail('Cannot reach the game server. Check REMOTE_SERVER in game.js and that the server is running.');
+    else if (!$('waiting').hidden) fail('Disconnected from server');
     else if (!over) finish({ reason: 'disconnect' });
   };
 }
+const fail = msg => { show('lobby'); $('msg').textContent = msg; };
 const leave = () => { over = true; if (ws && ws.readyState === 1) ws.send('{"t":"leave"}'); };
 
 function handle(m) {
