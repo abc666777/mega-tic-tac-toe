@@ -1,268 +1,106 @@
-//YEET
-NONE = 0;
-START = 1;
-PLAY = 2;
-STOP = 3;
-PAUSE = 4;
-MENU = 5;
-STATE = NONE;
+const N = 15;
+const $ = id => document.getElementById(id);
+const SCREENS = ['start-page', 'menu', 'lobby', 'waiting', 'play-page'];
+const sfx = new Audio('sfx.wav'), bgm = new Audio('bgm.mp3');
+bgm.loop = true;
+const play = a => { a.currentTime = 0; a.play().catch(() => {}); }; // ignore autoplay-policy errors
 
-PLAYER = 'X';
-arrayValue = [];
-initValue = 0;
-boxCount = 225;
+let ws, me, turn, over = true, time = 30;
 
-TIME = 0;
-COUTER = 0;
-//Page
-menuPage = document.getElementById('menuPause');
-startPage = document.getElementById('start-page');
-menuMode = document.getElementById('menu');
-playPage = document.getElementById('play-page');
-winner = document.getElementById('winner');
+const show = name => SCREENS.forEach(s => { $(s).hidden = s !== name; });
 
-BGM = new sound('bgm.mp3');
-BGM.sound.setAttribute('loop', 'loop');
-SFX = new sound('sfx.wav');
+function send(m) {
+  const go = () => ws.send(JSON.stringify(m));
+  if (ws && ws.readyState === 1) return go();
+  if (ws && ws.readyState === 0) return ws.addEventListener('open', go, { once: true });
+  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`);
+  ws.onopen = go;
+  ws.onmessage = e => handle(JSON.parse(e.data));
+  ws.onclose = () => {
+    if (!$('waiting').hidden) { show('lobby'); $('msg').textContent = 'Disconnected from server'; }
+    else if (!over) finish({ reason: 'disconnect' });
+  };
+}
+const leave = () => { over = true; if (ws && ws.readyState === 1) ws.send('{"t":"leave"}'); };
 
-window.onload = init(NONE, 0)
-
-
-function playSFX(){
-    SFX.sound.currentTime = 0;
-    SFX.play();
+function handle(m) {
+  switch (m.t) {
+    case 'waiting': $('roomcode').textContent = m.code ? `CODE: ${m.code}` : 'FINDING PLAYER...'; show('waiting'); break;
+    case 'error': $('msg').textContent = m.msg; break;
+    case 'start': startGame(m); break;
+    case 'move': place(m.x, m.y, m.p); break;
+    case 'turn': setTurn(m.turn, m.left); break;
+    case 'end': finish(m); break;
+  }
 }
 
-function init(state, time) {
-    TIME = time;
-    COUTER = time;
-    //Make Open page
-    if (state == NONE) {
-        menuPage.style.display = 'none';
-        startPage.style.display = 'flex';
-        menuMode.style.display = 'none';
-        playPage.style.display = 'none';
-        winner.style.display = 'none';
-    }
-    if (state == START) {
-        //scene Make Table
-        playSFX();
-        menuPage.style.display = 'none';
-        startPage.style.display = 'none';
-        menuMode.style.display = 'none';
-        playPage.style.display = 'block';
-        winner.style.display = 'none';
-        setState(PLAY);
-        let table = document.createElement('table');
-        for (let i = 0; i < 15; i++) {
-            let row = table.insertRow(-1);
-            for (let j = 0; j < 15; j++) {
-                let col = row.insertCell(-1);
-                col.id = 'x' + i + 'y' + j;
-                col.setAttribute('onclick', `clicked(PLAYER,${i},${j});`);
-                col.classList.add('table-col');
-            }
-            for (let i = 0; i < 15; i++) {
-                arrayValue[i] = [];
-            }
-            for (let i = 0; i < 15; i++) {
-                for (let j = 0; j < 15; j++) {
-                    arrayValue[i][j] = `${i}:${j}`;
-                    initValue++;
-                }
-            }
-        }
-        //Set time counter
-        turnManage(time);
-        playTable.appendChild(table);
-    }
-    if (state == MENU) {
-        playSFX();
-        BGM.play();
-        menuPage.style.display = 'none';
-        startPage.style.display = 'none';
-        menuMode.style.display = 'flex';
-        playPage.style.display = 'none';
-        winner.style.display = 'none';
-    }
+function startGame(m) {
+  me = m.you; over = false;
+  let html = '<table>';
+  for (let i = 0; i < N; i++) {
+    html += '<tr>';
+    for (let j = 0; j < N; j++) html += `<td class="table-col" id="x${i}y${j}" data-x="${i}" data-y="${j}"></td>`;
+    html += '</tr>';
+  }
+  $('playTable').innerHTML = html + '</table>';
+  setTurn('X', m.time);
+  show('play-page');
+  play(sfx);
 }
 
-function callPauseMenu(x) {
-    if (x) {
-        playSFX();
-        menuPage.style.display = 'flex';
-        setState(PAUSE);
-    } else {
-        playSFX();
-        menuPage.style.display = 'none';
-        setState(PLAY);
-    }
+function setTurn(t, left) {
+  turn = t;
+  $('turn').innerHTML = `TURN OF <b>${t}</b>${t === me ? ' (YOU)' : ''}`;
+  $('timeCounter').innerHTML = `TIME: <b>${left}</b>`;
 }
 
-function callWinner(x, player) {
-    if (x) {
-        winner.style.display = 'flex';
-        playSFX();
-        setState(PAUSE);
-    } else {
-        winner.style.display = 'none';
-        playSFX();
-        setState(PLAY);
-    }
-    winname.innerHTML = PLAYER + ' WIN!!';
-
+function place(x, y, p) {
+  const c = $(`x${x}y${y}`);
+  c.innerHTML = `<div>${p}</div>`;
+  c.classList.add('addTotable');
+  play(sfx);
 }
 
-function turnManage(time) {
-    if (STATE == PLAY) {
-        gameTime = setInterval(() => {
-            setCounter();
-        }, 1000);
-    }
+function finish(m) {
+  over = true;
+  $('winname').textContent = m.reason === 'disconnect' ? 'DISCONNECTED'
+    : m.draw ? 'DRAW!'
+    : m.reason === 'left' ? 'OPPONENT LEFT' : m.winner === me ? 'YOU WIN!!' : 'YOU LOSE';
+  (m.line || []).forEach(([x, y]) => { $(`x${x}y${y}`).style.backgroundColor = 'green'; });
+  $('menuPause').hidden = true;
+  $('winner').hidden = false;
+  play(sfx);
 }
 
-function gameStop(state) {
-    playSFX();
-    clearInterval(gameTime);
-    playTable.innerHTML = '';
-    setTimeout(() => {
-        init(state, 0);
-    }, 100);
-
+function reset(screen) {
+  leave();
+  $('playTable').innerHTML = '';
+  $('winner').hidden = $('menuPause').hidden = true;
+  $('msg').textContent = '';
+  show(screen);
 }
 
-function setCounter() {
-    if (STATE == PLAY) {
-        COUTER--;
-        if (COUTER <= 0) {
-            COUTER = TIME;
-            toggleTurn();
-        };
-        timeCounter.innerHTML = `TIME: <b>${COUTER}</b>`
-    }
-}
+const actions = {
+  start: () => { bgm.play().catch(() => {}); reset('menu'); },
+  time: el => { time = +el.dataset.v; show('lobby'); },
+  quick: () => send({ t: 'quick', time }),
+  create: () => send({ t: 'create', time }),
+  join: () => send({ t: 'join', code: $('code').value }),
+  cancel: () => reset('lobby'),
+  pause: () => { $('menuPause').hidden = false; }, // online games can't be paused, only the menu opens
+  resume: () => { $('menuPause').hidden = true; },
+  mode: () => reset('menu'),
+  exit: () => reset('start-page'),
+};
 
-//Gameplay 
-function clicked(player, x, y) { //CLICKED FUNCTION
-    if (document.getElementById(`x${x}y${y}`).innerText == '' && STATE == PLAY) {
-        playSFX();
-        document.getElementById(`x${x}y${y}`).innerHTML = `<div>${PLAYER}</div>`;
-        document.getElementById(`x${x}y${y}`).classList.add('addTotable');
-        arrayValue[x][y] = PLAYER;
-        COUTER = TIME;
-        checkWinCon();
-        toggleTurn();
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]');
+  if (!el) return;
+  play(sfx);
+  actions[el.dataset.a](el);
+});
 
-    }
-}
-
-function toggleTurn() { //TOGGLE TURN
-    if (PLAYER == 'X') { PLAYER = 'O'; }
-    else { PLAYER = 'X'; }
-    turn.innerHTML = `TURN OF <b>${PLAYER}</b>`
-}
-
-function checkWinCon() { //CHECK FOR WINNERS
-    checkHorizontal();
-    checkVerticle();
-    checkLeftArc();
-    checkRightArc();
-}
-
-function setState(arg) {
-    STATE = arg;
-}
-
-function checkHorizontal() { //CHECK NAEW NORN
-    if (STATE == PLAY) {
-        for (let i = 0; i < 15; i++) {
-            for (let j = 0; j < 11; j++) {
-                if (arrayValue[i][j] == arrayValue[i][j + 1] && arrayValue[i][j + 1] == arrayValue[i][j + 2]
-                    && arrayValue[i][j + 2] == arrayValue[i][j + 3] && arrayValue[i][j + 3] == arrayValue[i][j + 4]) {
-                    setState(STOP);
-                    document.getElementById('x' + i + 'y' + j).style.backgroundColor = 'green';
-                    document.getElementById('x' + i + 'y' + (j + 1)).style.backgroundColor = 'green';
-                    document.getElementById('x' + i + 'y' + (j + 2)).style.backgroundColor = 'green';
-                    document.getElementById('x' + i + 'y' + (j + 3)).style.backgroundColor = 'green';
-                    document.getElementById('x' + i + 'y' + (j + 4)).style.backgroundColor = 'green';
-                    callWinner(true, PLAYER);
-                }
-            }
-        }
-    }
-}
-
-function checkVerticle() { //CHECK NAEW TUNG
-    if (STATE == PLAY) {
-        for (let i = 0; i < 15; i++) {
-            for (let j = 0; j < 11; j++) {
-                if (arrayValue[j][i] == arrayValue[j + 1][i] && arrayValue[j + 1][i] == arrayValue[j + 2][i]
-                    && arrayValue[j + 2][i] == arrayValue[j + 3][i] && arrayValue[j + 3][i] == arrayValue[j + 4][i]) {
-                    setState(STOP);
-                    document.getElementById('x' + j + 'y' + i).style.backgroundColor = 'green';
-                    document.getElementById('x' + (j + 1) + 'y' + i).style.backgroundColor = 'green';
-                    document.getElementById('x' + (j + 2) + 'y' + i).style.backgroundColor = 'green';
-                    document.getElementById('x' + (j + 3) + 'y' + i).style.backgroundColor = 'green';
-                    document.getElementById('x' + (j + 4) + 'y' + i).style.backgroundColor = 'green';
-                    callWinner(true, PLAYER)
-                }
-            }
-        }
-    }
-}
-
-function checkLeftArc() { //CHECK CHIANG SAI
-    if (STATE == PLAY) {
-        for (let i = 0; i < 11; i++) {
-            for (let j = 0; j < 11; j++) {
-                if (arrayValue[i][j] == arrayValue[i + 1][j + 1] && arrayValue[i + 1][j + 1] == arrayValue[i + 2][j + 2]
-                    && arrayValue[i + 2][j + 2] == arrayValue[i + 3][j + 3] && arrayValue[i + 3][j + 3] == arrayValue[i + 4][j + 4]) {
-                    setState(STOP);
-                    document.getElementById('x' + i + 'y' + j).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 1) + 'y' + (j + 1)).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 2) + 'y' + (j + 2)).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 3) + 'y' + (j + 3)).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 4) + 'y' + (j + 4)).style.backgroundColor = 'green';
-                    callWinner(true, PLAYER)
-                }
-            }
-        }
-    }
-}
-
-function checkRightArc() { //CHECK CHIANG SAI
-    if (STATE == PLAY) {
-        for (let i = 0; i < 11; i++) {
-            for (let j = 4; j < 15; j++) {
-                if (arrayValue[i][j] == arrayValue[i + 1][j - 1] && arrayValue[i + 1][j - 1] == arrayValue[i + 2][j - 2]
-                    && arrayValue[i + 2][j - 2] == arrayValue[i + 3][j - 3] && arrayValue[i + 3][j - 3] == arrayValue[i + 4][j - 4]) {
-                    setState(STOP);
-                    document.getElementById('x' + i + 'y' + j).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 1) + 'y' + (j - 1)).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 2) + 'y' + (j - 2)).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 3) + 'y' + (j - 3)).style.backgroundColor = 'green';
-                    document.getElementById('x' + (i + 4) + 'y' + (j - 4)).style.backgroundColor = 'green';
-                    callWinner(true, PLAYER)
-                }
-            }
-        }
-    }
-}
-
-function sound(src) { //ADD AUDIO TAG
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function () { //BGM.play(); START BGM MUSIC
-        playSound = this.sound.play(); //ERROR HANDLER (For Chrome Policy)
-        if (playSound !== undefined) {
-            playSound.then(_ => { }).catch(error => { });
-        }
-    }
-    this.stop = function () { //BGM.stop();
-        this.sound.pause();
-    }
-}
+$('playTable').addEventListener('click', e => { // one listener for all 225 cells
+  const c = e.target.closest('td');
+  if (c && !over && turn === me && !c.textContent) send({ t: 'move', x: +c.dataset.x, y: +c.dataset.y });
+});

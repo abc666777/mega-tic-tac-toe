@@ -1,62 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="./game.css">
-    <title>Tic Tac Toe</title>
+    <title>Mega Tic Tac Toe</title>
 </head>
-
 <body>
-    <div id="container">
-        <div id="canvas">
-            <div id="winner">
-                <div>
-                    <div class="game-title" id="winname">WIN!</div>
-                    <div class="sub-menu" onclick="gameStop(MENU)">X <b>MODE</b> O</div>
-                    <div class=" sub-menu" onclick="gameStop(NONE)">X <b>EXIT</b> O</div>
-                </div>
+    <div id="container"><div id="canvas">
+        <div id="winner" hidden><div>
+            <div class="game-title" id="winname"></div>
+            <div class="sub-menu" data-a="mode">X <b>MODE</b> O</div>
+            <div class="sub-menu" data-a="exit">X <b>EXIT</b> O</div>
+        </div></div>
+        <div id="menuPause" hidden><div>
+            <div class="game-title">MENU</div>
+            <div class="sub-menu" data-a="resume">X <b>CONTINUE</b> O</div>
+            <div class="sub-menu" data-a="mode">X <b>LEAVE GAME</b> O</div>
+        </div></div>
+        <div id="start-page"><div>
+            <div class="game-title"><b>MEGA-TIC-TAC-TOE</b></div>
+            <div class="sub-menu" data-a="start">X <b>START</b> O</div>
+        </div></div>
+        <div id="menu" hidden><div>
+            <div class="game-title"><b>MODE</b></div>
+            <div class="sub-menu" data-a="time" data-v="30">X <b>NOVICE</b> O</div>
+            <div class="sub-menu" data-a="time" data-v="15">X <b>INTERMEDIATE</b> O</div>
+            <div class="sub-menu" data-a="time" data-v="5">X <b>PRO</b> O</div>
+        </div></div>
+        <div id="lobby" hidden><div>
+            <div class="game-title"><b>ONLINE</b></div>
+            <div class="sub-menu" data-a="quick">X <b>QUICK MATCH</b> O</div>
+            <div class="sub-menu" data-a="create">X <b>CREATE ROOM</b> O</div>
+            <div class="sub-menu"><input id="code" maxlength="4" placeholder="CODE" autocomplete="off">
+                <span data-a="join">X <b>JOIN</b> O</span></div>
+            <div id="msg"></div>
+            <div class="sub-menu" data-a="start">X <b>BACK</b> O</div>
+        </div></div>
+        <div id="waiting" hidden><div>
+            <div class="game-title" id="roomcode"></div>
+            <div class="sub-menu" data-a="cancel">X <b>CANCEL</b> O</div>
+        </div></div>
+        <div id="play-page" hidden>
+            <div id="status-bar">
+                <div class="sub-status"><div>
+                    <div id="turn"></div>
+                    <div id="timeCounter"></div>
+                </div></div>
+                <img data-a="pause" id="button-pause" src="pause-symbol.svg" width="30px" alt="Menu">
             </div>
-            <div id="menuPause">
-                <div>
-                    <div class="game-title">MENU</div>
-                    <div class="sub-menu" onclick="callPauseMenu(false)">X <b>CONTINUE</b> O</div>
-                    <div class="sub-menu" onclick="gameStop(MENU)">X <b>MODE</b> O</div>
-                    <div class=" sub-menu" onclick="gameStop(NONE)">X <b>EXIT</b> O</div>
-                </div>
-            </div>
-            <div id="start-page">
-                <div>
-                    <div class="game-title"><b>MEGA-TIC-TAC-TOE</b></div>
-                    <div class="sub-menu" onclick="init(MENU, 0)">X <b>START</b> O</div>
-                </div>
-            </div>
-            <div id="menu">
-                <div>
-                    <div class="game-title"><b>MODE</b></div>
-                    <div class="sub-menu" onclick="init(START, 30)">X <b>NOVICE</b> O</div>
-                    <div class="sub-menu" onclick="init(START, 15)">X <b>INTERMEDIATE</b> O</div>
-                    <div class="sub-menu" onclick="init(START, 5)">X <b>PRO</b> O</div>
-                    <br>
-                </div>
-            </div>
-            <div id="play-page">
-                <div id="status-bar">
-                    <div class="sub-status">
-                        <div>
-                            <div id="turn">TURN OF <b>X</b></div>
-                            <div id="timeCounter">TIME: <b>30</b></div>
-                        </div>
-                    </div>
-                    <img onclick="callPauseMenu(true)" id="button-pause" src="pause-symbol.svg" width="30px" alt="">
-                </div>
-                <div id="playTable"></div>
-            </div>
+            <div id="playTable"></div>
         </div>
-    </div>
+    </div></div>
+    <script src="./game.js"></script>
 </body>
-<script src="./game.js"></script>
-
 </html>

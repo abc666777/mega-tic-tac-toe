@@ -139,3 +139,12 @@ table{
     from{ transform: scale(5) }
     to{transform: scale(1)}
 }
+
+[hidden]{ display: none !important; }
+#code{
+    font: inherit; font-size: 1em; width: 3.2em; text-align: center; text-transform: uppercase;
+    background: transparent; border: 0; border-bottom: 4px solid black; outline: none; margin-right: 20px;
+}
+#msg{ text-align: center; font-size: 2em; color: #b00020; min-height: 1.2em; }
+#roomcode{ font-size: 4em; }
+#start-page, #menu, #lobby, #waiting{ text-align: center; }
