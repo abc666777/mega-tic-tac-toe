@@ -4,6 +4,8 @@
 }
 
 body{
+    --cell: clamp(16px, min(calc((100vw - 24px) / 15), calc((100dvh - 190px) / 15)), 40px);
+    touch-action: manipulation;
     margin: 0;
     font-family: scribble;
     background-color: #FEF8BA;
@@ -15,7 +17,8 @@ body{
 
 #canvas{
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
     background-color: #FEF8BA;
     display: flex;
     justify-content: center;
@@ -37,10 +40,10 @@ body{
     cursor: pointer;
     user-select: none;
 }
-.sub-menu:hover{
+@media (hover:hover){ .sub-menu:hover{
     transform: scale(1.2);
     text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5)
-}
+} }
 #play-page{
     width: 100%;
     height: 100%;
@@ -100,13 +103,17 @@ body{
 table{
     color: black;
     z-index: 1000;
-    border: 10px solid black;
+    border: 5px solid black;
+    border-collapse: collapse;
     border-radius: 5px;
 }
 
 .table-col{
-    width: 2vw;
-    height: 2vw;
+    width: var(--cell);
+    height: var(--cell);
+    padding: 0;
+    font-size: calc(var(--cell) * 0.7);
+    line-height: 1;
     cursor: pointer;
     background-color: #FEF8BA;
     user-select: none;
@@ -118,9 +125,7 @@ table{
     font-weight: 900;
 }
 
-.table-col:hover{
-    background-color: rgba(0, 0, 0, 0.5);
-}
+@media (hover:hover){ .table-col:hover{ background-color: rgba(0, 0, 0, 0.5); } }
 
 .addTotable{
     animation: bigToSmall 0.3s;
@@ -131,8 +136,8 @@ table{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 3px;
-    margin-top: 4px;
+    width: 100%;
+    height: 100%;
 }
 
 @keyframes bigToSmall{
@@ -148,3 +153,16 @@ table{
 #msg{ text-align: center; font-size: 2em; color: #b00020; min-height: 1.2em; }
 #roomcode{ font-size: 4em; }
 #start-page, #menu, #lobby, #waiting{ text-align: center; }
+
+/* Mobile */
+@media (max-width: 700px){
+    .game-title{ font-size: 2.6em; margin: 0 10px; }
+    #winname{ font-size: 3.4em; }
+    #roomcode{ font-size: 2.4em; }
+    .sub-menu{ font-size: 1.7em; margin: 22px 10px; }
+    .sub-status{ font-size: 1.4em; padding: 18px 0 14px; }
+    #button-pause{ width: 24px; padding: 12px; }
+    #msg{ font-size: 1.1em; margin: 0 16px; }
+    #code{ margin-right: 8px; }
+    table{ border-width: 3px; }
+}
